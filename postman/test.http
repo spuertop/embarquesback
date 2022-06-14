@@ -1,0 +1,18 @@
+@url = http://localhost:3000/api/users
+
+### GET ALL USERS
+GET {{url}}/getAllUsers/basic
+###
+GET {{url}}/getAllUsers/complete
+
+###
+GET {{url}}/getAllUsers/users
+
+### GET USER BY ID
+GET {{url}}/getUser/2
+
+### POST NEW USER
+POST {{url}}/postUserSecret
+Content-Type: application/json
+
+{ "name": "Sergio", "pass": "1234" , "role":"Administrador"}
