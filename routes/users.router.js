@@ -7,5 +7,6 @@ const ctrl = require('../database/controller')
 
 router.get('/users/all', ctrl.getAllUsers);
 router.post('/users/login', ctrl.signin);
-
+router.use(ctrl.isAuthenticated);
+router.get('/customers/all', ctrl.getAllEmpresas);
 module.exports = router;

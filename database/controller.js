@@ -41,7 +41,7 @@ module.exports = {
         }
     },
 
-    async newUser(req, res) {
+    /*async newUser(req, res) {
         let name = "Alice";
         let email = ""
         let pass = "1234"
@@ -58,11 +58,14 @@ module.exports = {
             res.status(500)
             res.send(error.message)
         }
-    },
+    },*/
 
     //Protected routes
     isAuthenticated(req, res, next) {
-        jwt.verify(req.cookies.token, cxn.accessToken, function(err, decoded) {
+        const token = req.get('Authorization');
+        jwt.verify(token, cxn.accessToken, function(err, decoded) {
+            //TODO: Redirige al / de express y no de vue (revisar)
+            console.log(err)
             if (err) res.redirect('/');
             if (decoded !== undefined) {
                 //console.log(decoded) //{user, ita, exp}
@@ -74,23 +77,14 @@ module.exports = {
     },
 
     async getAllEmpresas(req, res) {
-        //console.log(req.user);
+        console.log(req.user);
         try {
             const pool = await cxn.getUserConn();
             let result = await pool.request().query(queries.getAllEmpresas);
             let empresas = result.recordset;
-            if (empresas.length == 0) {
-                res.render('users/empresas', {
-                    nada: true
-                });
-            } else {
-                res.render('users/empresas', {
-                    data: empresas
-                });
-            }
+            return res.status(200).json(empresas);
         } catch (error) {
-            res.status(500)
-            res.send(error.message)
+            return res.status(403).json({ msg: "Error", error: 'Contraseña incorrecta' })
         }
     },
 
