@@ -65,7 +65,6 @@ module.exports = {
         const token = req.get('Authorization');
         jwt.verify(token, cxn.accessToken, function(err, decoded) {
             //TODO: Redirige al / de express y no de vue (revisar)
-            console.log(err)
             if (err) res.redirect('/');
             if (decoded !== undefined) {
                 //console.log(decoded) //{user, ita, exp}
@@ -88,39 +87,15 @@ module.exports = {
         }
     },
 
-    async getOneEmpresa(req, res) {
-        let empresa = req.query['name'];
-        const accessToken = jwt.sign({
-            user: req.user,
-            empresa: empresa
-        }, cxn.accessToken, {
-            expiresIn: '1h'
-        });
-        res.cookie('token', accessToken);
-        res.redirect('/users/albaran');
-    },
-
-    async FormAlbaran(req, res) {
-        let user = req.user;
-        let empresa = req.empresa;
-        let data = {
-            user,
-            empresa
-        };
-        res.render('users/albaran', {
-            data: data
-        })
-    },
-
     async getAlbaranData(req, res) {
         let user = req.user;
-        let empresa = req.empresa;
-        let ae = req.query['albaran'];
+        //req.query = { albaran: '', empresa: '' }
+        console.log(req.query.albaran, req.query.empresa)
         try {
             const pool = await cxn.getConnection();
             let result = await pool.request()
-                .input('Empresa', empresa)
-                .input('PLE', 'PLC' + ae)
+                .input('Empresa', req.query.empresa)
+                .input('PLE', 'PLC' + req.query.albaran)
                 .query(queries.getAlbaranData);
             let lecturas = result.recordset;
             lecturas.forEach(function(item) {
@@ -130,79 +105,62 @@ module.exports = {
                 }
             });
             let result2 = await pool.request()
-                .input('Empresa', empresa)
-                .input('AE', ae)
+                .input('Empresa', req.query.empresa)
+                .input('AE', req.query.albaran)
                 .query(queries.getAEagencia);
             let agencia = result2.recordset[0];
-            console.log(agencia);
+            
             //Sin coincidencias, devolver a /albaran
             if (lecturas.length == 0) {
-                res.render('users/albaran', {
-                    data: {
-                        ae,
-                        empresa,
-                        user,
-                        'notfound': true
-                    }
-                });
+                //TODO: Comprobar que funciona en producción
+                //res.redirect('/documents') 
+                return res.status(404).json({msg: "Error", error: 'Este albarán no tiene un packing de carga o es de otro cliente.'})    
             } else {
-                console.log(lecturas)
-                res.render('users/cargar', {
-                    data: {
-                        ae,
-                        empresa,
-                        user,
-                        lecturas,
-                        agencia
-                    }
-                });
+                return res.status(200).json({
+                    lecturas,
+                    agencia
+                })
             }
         } catch (error) {
-            res.status(500)
-            res.send("Linea 01" + error.message)
+            return res.status(403).json({ msg: "Error", error: error.toString() })
         }
-
     },
 
     async cargar(req, res) {
         let user = req.user;
-        let empresa = req.empresa;
-        let ae = req.query['ae'];
-        let ud = req.query['ud'];
+        let ob = req.body;
         try {
             const pool = await cxn.getConnection();
             let result = await pool.request()
-                .input('Descripcion', ud)
+                .input('Descripcion', ob.ud)
                 .query(queries.putCargadoOnUd);
             await pool.request()
-                .input('PLE', 'PLC' + ae)
-                .input('Empresa', empresa)
+                .input('PLE', 'PLC' + ob.ae)
+                .input('Empresa', ob.empresa)
                 .input('usuario', user)
                 .query(queries.setControlUsuario2);
             res.json(result.rowsAffected);
         } catch (error) {
-            console.log('Fatal error on getAlbaranData if ud ' + error)
+            return res.status(500).json({ msg: "Error", error: 'Fatal error' })
         }
     },
 
     async descargar(req, res) {
         let user = req.user;
-        let empresa = req.empresa;
-        let ae = req.query['ae'];
-        let udd = req.query['udd'];
+        let ob = req.body;
         try {
             const pool = await cxn.getConnection();
             let result = await pool.request()
-                .input('Descripcion', udd)
+                .input('Descripcion', ob.ud)
                 .query(queries.delCargadoOnUd);
             await pool.request()
-                .input('PLE', 'PLC' + ae)
-                .input('Empresa', empresa)
+                .input('PLE', 'PLC' + ob.ae)
+                .input('Empresa', ob.empresa)
                 .input('usuario', user)
                 .query(queries.setControlUsuario2);
             res.json(result.rowsAffected);
         } catch (error) {
-            console.log('Fatal error on getAlbaranData if udd ' + error)
+            return res.status(500).json({ msg: "Error", error: 'Fatal error' })
         }
     },
 
