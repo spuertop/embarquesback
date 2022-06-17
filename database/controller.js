@@ -139,6 +139,7 @@ module.exports = {
                 .input('Empresa', ob.empresa)
                 .input('usuario', user)
                 .query(queries.setControlUsuario2);
+            setAE(ob);
             res.json(result.rowsAffected);
         } catch (error) {
             return res.status(500).json({ msg: "Error", error: 'Fatal error' })
@@ -158,44 +159,53 @@ module.exports = {
                 .input('Empresa', ob.empresa)
                 .input('usuario', user)
                 .query(queries.setControlUsuario2);
+            setAE(ob);
             res.json(result.rowsAffected);
         } catch (error) {
+            console.log(error)
             return res.status(500).json({ msg: "Error", error: 'Fatal error' })
         }
     },
 
-    async setAE(req, res) {
-        let user = req.user;
-        let empresa = req.empresa;
-        let ae = req.query['ae'];
-        let total = req.query['total'];
-        if (total == 100) {
-            total = 75 //estilo cargado
-        } else if (total > 0) {
-            total = 74 //parcialmente cargado
-        } else {
-            total = null
-        }
-        try {
-            const pool = await cxn.getConnection();
-            let result = await pool.request()
-                .input('Estilo', total)
-                .input('NumeroDePackingList', "PLC" + ae)
-                .query(queries.setEstiloAE);
-            //Actualizar AE
-            await pool.request()
-                .input('Estado', total == 75 ? "CARGADO" : null)
-                .input('NumeroDeAlbaran', ae)
-                .input('Empresa', empresa)
-                .query(queries.setCodigoEstadoAE)
-            res.json(result.rowsAffected);
-        } catch (error) {
-            console.log(error)
-        }
-    },
 
     async logout(req, res) {
         res.cookie('token', '');
         res.redirect('/');
+    }
+}
+
+
+async function setAE(ob) {
+    try {
+        const pool = await cxn.getConnection();
+        //GET como cuantos NRODS hay y cómo están.
+        let estadoActual = await pool.request()
+            .input('PLE', "PLC" + ob.ae)
+            .input('Empresa', ob.empresa)
+            .query(queries.getNroDS);
+        let total = 0, cargado= 0, nulos = 0;
+        estadoActual.recordset.forEach(item=>{
+            item.NroDS === 'Cargado' ? cargado++ : nulos++;
+            total++;
+        })
+        if (total === cargado) {
+            total = 75 //estilo cargado
+        } else if (total === nulos ) {
+            total = null;
+        } else {
+            total = 74 //parcialmente cargado
+        }
+        await pool.request()
+            .input('Estilo', total)
+            .input('NumeroDePackingList', "PLC" + ob.ae)
+            .query(queries.setEstiloAE);
+        //Actualizar AE
+        await pool.request()
+            .input('Estado', total === 75 ? "CARGADO" : null)
+            .input('NumeroDeAlbaran', ob.ae)
+            .input('Empresa', ob.empresa)
+            .query(queries.setCodigoEstadoAE)
+    } catch (error) {
+        console.log(error)
     }
 }
