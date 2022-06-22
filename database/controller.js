@@ -1,6 +1,8 @@
 const cxn = require('./connection');
 const queries = require('./queries');
 const jwt = require('jsonwebtoken');
+const formidable = require('formidable');
+const fs = require('fs');
 
 module.exports = {
     async getAllUsers(req, res) {
@@ -167,11 +169,48 @@ module.exports = {
         }
     },
 
+    async postphoto(req, res) {
+        let { customer, aedocument, photo } = req.body;
+        let filename = customer + "_" + aedocument + "_" + (new Date().valueOf()) + ".jpg";
+        try {
+            let dir = "C:\\Apliwin\\Archivo\\Embarques\\" + aedocument + "\\";
+            const buffer = Buffer.from(photo, "base64");
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir)
+            }
+            fs.writeFileSync(dir + filename, buffer);
+            const pool = await cxn.getConnection();
+            let result = await pool.request()
+                .input('customerbraedocument', customer + '<BR>' + aedocument)
+                .input('path', dir + filename)
+                .query(queries.postPhotoLink);
+            return res.status(200).json(result.rowsAffected);
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ msg: "Error", error: 'Fatal error' })
+        }
+    },
 
+    async getPhotos(req, res){
+        let aedocument = req.query.ae;
+        let dir = "C:\\Apliwin\\Archivo\\Embarques\\" + aedocument + "\\";
+        let result = [];
+        try {
+            if(fs.existsSync(dir)){
+                result = fs.readdirSync(dir);
+            }
+            return res.status(200).json(result)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ msg: "Error", error: 'Fatal error' })
+        }
+    },
     async logout(req, res) {
         res.cookie('token', '');
         res.redirect('/');
-    }
+    },
+
+
 }
 
 

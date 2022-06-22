@@ -12,5 +12,7 @@ router.get('/customers/all', ctrl.getAllEmpresas);
 router.get('/delivery', ctrl.getAlbaranData);
 router.put('/upload', ctrl.cargar);
 router.put('/download', ctrl.descargar);
+router.post('/postphoto', ctrl.postphoto);
+router.get('/getphotos', ctrl.getPhotos)
 
 module.exports = router;
