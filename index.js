@@ -6,7 +6,8 @@ const history = require('connect-history-api-fallback');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-const port = 3000;
+//const port = 3000;
+const port = 4002;
 
 //Conexion a DB
 

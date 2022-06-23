@@ -1,7 +1,6 @@
 const cxn = require('./connection');
 const queries = require('./queries');
 const jwt = require('jsonwebtoken');
-const formidable = require('formidable');
 const fs = require('fs');
 
 module.exports = {
@@ -42,25 +41,6 @@ module.exports = {
             return res.status(403).json({ msg: "Error", error: error.toString() })
         }
     },
-
-    /*async newUser(req, res) {
-        let name = "Alice";
-        let email = ""
-        let pass = "1234"
-
-        try {
-            const pool = await cxn.getConnection();
-            let result = await pool.request()
-                .input('name', name)
-                .input('email', email)
-                .input('pass', pass)
-                .query(queries.newUser);
-            res.json(result)
-        } catch (error) {
-            res.status(500)
-            res.send(error.message)
-        }
-    },*/
 
     //Protected routes
     isAuthenticated(req, res, next) {
@@ -135,6 +115,7 @@ module.exports = {
             const pool = await cxn.getConnection();
             let result = await pool.request()
                 .input('Descripcion', ob.ud)
+                .input('PLE', 'PLC' + ob.ae)
                 .query(queries.putCargadoOnUd);
             await pool.request()
                 .input('PLE', 'PLC' + ob.ae)
@@ -155,6 +136,7 @@ module.exports = {
             const pool = await cxn.getConnection();
             let result = await pool.request()
                 .input('Descripcion', ob.ud)
+                .input('PLE', 'PLC' + ob.ae)
                 .query(queries.delCargadoOnUd);
             await pool.request()
                 .input('PLE', 'PLC' + ob.ae)
