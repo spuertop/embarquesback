@@ -155,7 +155,7 @@ module.exports = {
         let { customer, aedocument, photo } = req.body;
         let filename = customer + "_" + aedocument + "_" + (new Date().valueOf()) + ".jpg";
         try {
-            let dir = "C:\\Apliwin\\Archivo\\Embarques\\" + aedocument + "\\";
+            let dir = "Y:\\Archivo\\Embarques\\" + aedocument + "\\";
             const buffer = Buffer.from(photo, "base64");
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir)
@@ -175,7 +175,7 @@ module.exports = {
 
     async getPhotos(req, res){
         let aedocument = req.query.ae;
-        let dir = "C:\\Apliwin\\Archivo\\Embarques\\" + aedocument + "\\";
+        let dir = "Y:\\Archivo\\Embarques\\" + aedocument + "\\";
         let result = [];
         try {
             if(fs.existsSync(dir)){
