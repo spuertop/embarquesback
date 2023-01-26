@@ -155,7 +155,8 @@ module.exports = {
         let { customer, aedocument, photo } = req.body;
         let filename = customer + "_" + aedocument + "_" + (new Date().valueOf()) + ".jpg";
         try {
-            let dir = "Y:\\Archivo\\Embarques\\" + aedocument + "\\";
+            let dir = "C:\\Apliwin\\Archivo\\Embarques\\" + aedocument + "\\";
+			let destiny = "Y:\\Archivo\\Embarques\\"+ aedocument + "\\" + filename;
             const buffer = Buffer.from(photo, "base64");
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir)
@@ -164,7 +165,7 @@ module.exports = {
             const pool = await cxn.getConnection();
             let result = await pool.request()
                 .input('customerbraedocument', customer + '<BR>' + aedocument)
-                .input('path', dir + filename)
+                .input('path', destiny)
                 .query(queries.postPhotoLink);
             return res.status(200).json(result.rowsAffected);
         } catch (error) {
@@ -175,7 +176,7 @@ module.exports = {
 
     async getPhotos(req, res){
         let aedocument = req.query.ae;
-        let dir = "Y:\\Archivo\\Embarques\\" + aedocument + "\\";
+        let dir = "C:\\Apliwin\\Archivo\\Embarques\\" + aedocument + "\\";
         let result = [];
         try {
             if(fs.existsSync(dir)){
