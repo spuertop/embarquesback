@@ -28,7 +28,12 @@ module.exports = {
 
     getItemFamily: `select CodigoDeFamilia from APPIA_SQL.dbo.Familias where Empresa = @Empresa`,
     patchItemFamily: `update APPIA_SQL.dbo.Articulos set CodigoDeFamilia = @CodigoDeFamilia where Empresa = @Empresa and CodigoDeArticulo = @CodigoDeArticulo `,
-    patchItemDimension: `update APPIA_SQL.dbo.Articulos set UnidadDeDimensiones = @UnidadDeDimensiones, Ancho = @Ancho, Longitud = @Longitud, Alto = @Alto, Volumen = @Volumen where Empresa = @Empresa and CodigoDeArticulo = @CodigoDeArticulo `,
+    patchItemDimension: `update APPIA_SQL.dbo.Articulos set UnidadDeDimensiones = @UnidadDeDimensiones, 
+        Ancho = CAST(@Ancho AS DECIMAL(10,5)), 
+        Longitud = CAST(@Longitud AS DECIMAL(10,5)), 
+        Alto = CAST(@Alto AS DECIMAL(10,5)), 
+        Volumen = CAST(@Volumen AS DECIMAL(10,5)) 
+        where Empresa = @Empresa and CodigoDeArticulo = @CodigoDeArticulo `,
     patchItemPeso: `update APPIA_SQL.dbo.Articulos set PesoNeto = @PesoNeto, PesoDeEmbalaje = @PesoDeEmbalaje, PesoBruto = @PesoBruto, UnidadDePeso = @UnidadDePeso where Empresa = @Empresa and CodigoDeArticulo = @CodigoDeArticulo `,
 
     getItemPhotosua: `select FOTORuta from APPIA_SQL.dbo.Imagenes where DOCTabla = 'Articulos' and DOCID = @DOCID and FOTOTipoDeImagen = 'UA'`,
