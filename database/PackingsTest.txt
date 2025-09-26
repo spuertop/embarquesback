@@ -1,3 +1,0 @@
-AE072987 - Estado final cargado.
-AE073355 - Estado final nulo.
-AE074566 - Estado final parcialmente cargado (1/6 es nulo)

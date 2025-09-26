@@ -25,7 +25,7 @@ app.use('/api', require('./routes/users.router'));
 app.use(history());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static("C:\\Apliwin\\Archivo\\Embarques\\"));
-
+app.use(express.static("C:\\Apliwin\\APPIA\\Imagenes\\Docs\\"))
 //Server ON
 app.set('port', process.env.PORT || port);
 app.listen(app.get('port'), ()=> {
