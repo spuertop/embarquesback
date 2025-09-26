@@ -18,16 +18,7 @@ module.exports = {
     deletePhotoLink: `delete from APPIA_SQL.dbo.Imagenes where DOCID = @customerbraedocument and DOCTabla = 'AlbaranesDeEntrega' and FOTONotas like 'Embarques' and FOTORuta = @path`,
 
     getAllGDS: `select Nombre, Usuario from APPIA_INFO.dbo.Usuarios where EsAdministradorSN = -1 or Estilo = 62 order by Nombre`,
-    getItemData: `select CodigoDeArticulo, Descripcion1, Descripcion2, CodigoAlternativo, CodigoDeDepartamento
-        , CodigoDeFamilia, Codigodesubfamilia, IDUnidad, IDUnidadA, equivalenciaA, CodigoDeBarrasA, IDUnidadB, equivalenciaB
-        ,codigodebarrasB
-        , ROUND(longitud, 2) AS longitud
-        , ROUND(ancho, 2) AS ancho
-        , ROUND(alto, 2) AS alto
-        , ROUND(pesoneto, 2) AS pesoneto
-        , ROUND(PesoDeEmbalaje, 2) AS PesoDeEmbalaje
-        , ROUND(PesoBruto, 2) AS PesoBruto
-        , UnidadDeDimensiones, UnidadDePeso from APPIA_SQL.dbo.Articulos where Empresa = @Empresa and `,
+    getItemData: `select CodigoDeArticulo, Descripcion1, Descripcion2, CodigoAlternativo, CodigoDeDepartamento, CodigoDeFamilia, Codigodesubfamilia, IDUnidad, IDUnidadA, equivalenciaA, CodigoDeBarrasA, IDUnidadB, equivalenciaB,codigodebarrasB, ROUND(longitud, 5) AS longitud, ROUND(ancho, 5) AS ancho, ROUND(alto, 5) AS alto, ROUND(pesoneto, 5) AS pesoneto, ROUND(PesoDeEmbalaje, 5) AS PesoDeEmbalaje, ROUND(PesoBruto, 5) AS PesoBruto, UnidadDeDimensiones, UnidadDePeso from APPIA_SQL.dbo.Articulos where Empresa = @Empresa and `,
     getItemPhotos: `select FOTORuta from APPIA_SQL.dbo.Imagenes where DOCTabla = 'Articulos' and DOCID = @DOCID and FOTOTipoDeImagen = 'UV'`,
     postItemPhotoLink: `insert into APPIA_SQL.dbo.Imagenes (DOCID, DOCTabla, FOTONotas, FOTORuta, FOTOTipoDeImagen) values (@customerbraedocument, 'Articulos', 'Unidad de venta', @path, 'UV') `,
     deleteItemPhotoLink: `delete from APPIA_SQL.dbo.Imagenes where DOCID = @customerbraedocument and DOCTabla = 'Articulos' and FOTORuta = @path and FOTOTipoDeImagen = 'UV'`,
