@@ -1,0 +1,1 @@
+import{u as t}from"./global.8171e759.js";import{_ as e,o as r,f as a}from"./index.b3b9bf60.js";import"./axios.f60c3e4a.js";const s={setup(){const o=t();return o.logOut(),{globalStore:o}}};function c(o,n,p,u,l,_){return r(),a("h1")}var d=e(s,[["render",c]]);export{d as default};
